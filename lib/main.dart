@@ -28,67 +28,36 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
   List<String> dogImages = new List();
   ScrollController _scrollController = new ScrollController();
   var xTop = 0.0;
   var xBottom = 0.0;
-
-  var x = 0.0;
-  var dva_x = 0.0;
+  var fetchSuccess = true;
 
   @override
   void initState() {
     super.initState();
 
     if (xBottom == 0.0) {
-//      xBottom = _scrollController.position.maxScrollExtent;
       fetch();
     }
 
-
     _scrollController.addListener(() {
-
       if (xTop == 0.0 && xBottom == 0.0) {
         xTop = xBottom;
-        xBottom = _scrollController.position.maxScrollExtent;
+        xBottom = 4000;
       }
-
-      print("_scrollController.position.pixels ");
-      print(_scrollController.position.pixels);
-      print("=============");
-      print("_scrollController.position.maxScrollExtent ");
-      print(_scrollController.position.maxScrollExtent);
 
       if (_scrollController.position.pixels >= xTop &&
           _scrollController.position.pixels <= xBottom) {
-        fetch();
+        if (fetchSuccess) {
+          fetchSuccess = false;
+          fetch();
+        }
+      } else {
+        fetchSuccess = true;
       }
-
-
-//
-//
-//      _scrollController.addListener(() {
-//      print("_scrollController.position.pixels ");
-//      print(_scrollController.position.pixels);
-//      print("=============");
-//      print("_scrollController.position.maxScrollExtent ");
-//      print(_scrollController.position.maxScrollExtent);
-//
-//      var dva_x = _scrollController.position.maxScrollExtent;
-//      if (x == 0.0) {
-//        x = dva_x / 2;
-//      }
-//
-//      if (x - 300 <= _scrollController.position.pixels &&
-//          _scrollController.position.pixels <= x + 300) {
-//        print("X DO +2X " + x.toString());
-//        print("+2X " + dva_x.toString());
-//        x += dva_x;
-//        print("FETCHING NEW LOAD");
-//        fetch();
-//      }
     });
   }
 
@@ -125,20 +94,15 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         var photos = json.decode(response.body)['photos']['photo'];
         for (var photo in photos) {
-          print(photo);
           dogImages.add(
               "https://farm${photo['farm']}.staticflickr.com/${photo['server']}/${photo['id']}_${photo['secret']}_m.jpg");
         }
-
       });
+
       xTop = xBottom;
-      xBottom = _scrollController.position.maxScrollExtent;
-      print('xTop ' + xTop.toString());
-      print('xBottom ' + xBottom.toString());
+      xBottom += 4500;
     } else {
       throw Exception("Failed to load images!");
     }
   }
 }
-// Center is a layout widget. It takes a single child and positions it
-// in the middle of the parent.
